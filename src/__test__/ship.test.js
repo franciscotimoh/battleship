@@ -1,4 +1,4 @@
-import createShip from "./ship";
+import createShip from "../ship";
 
 describe("createShip", () => {
     test("ship of length 1 is sunk at 1 hit", () => {
