@@ -5,6 +5,7 @@ describe("createShip", () => {
         const cruiser = createShip(1);
         cruiser.hit();
         expect(cruiser.isSunk()).toEqual(true);
+        cruiser.hit();
     });
 
     test("cruiser of length 3 is not sunk at 2 hits", () => {

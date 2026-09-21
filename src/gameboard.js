@@ -1,40 +1,63 @@
-/**
- * Game boards should be able to place ships at specific coordinates
- * by calling the ship factory
- * Game boards should have a `receiveAttack` function that takes a
- * pair of coordinates, determines whether or not the attack hit a
- * ship and then sends the `hit` function to the correct ship, or
- * records the coordinates of the missed shot.
- * Game boards should keep track of missed attacks so they can display
- * them properly.
- * Game boards should be able to report whether or not all of their
- * ships have been sunk.
- *
- * 10x10 grid for each player
- * Carrier: 5 spaces
- * Battleship: 4 spaces
- * Destroyer: 3 spaces
- * Submarine: 3 spaces
- * Patrol Boat: 2 spaces
- */
 import createShip from "./ship";
 
 function createGameboard() {
-    // Coords are formatted as `${x}, ${y}`; don't forget the space!
     const coordsToShip = new Map();
     const fired = new Set();
     const ships = [];
 
-    // validate if it's legal to place the ship or not
-    // eslint-disable-next-line no-unused-vars
+    /**
+     * Constructs coordsToShip map key from coordinates
+     * @param {number} x
+     * @param {number} y
+     * @returns string - key for coordsToShip
+     */
+    function toKey(x, y) {
+        return `${x}, ${y}`;
+    }
+
+    /**
+     * Validates a ship can be placed in the desired coordinates
+     * A ship cannot be placed in the following conditions:
+     * 1) another ship already exists in the space(s) we're attempting to occupy
+     * 2) start/end coordinates are out of bounds
+     * @param {[number, number]} start
+     * @param {[number, number]} end
+     * @returns boolean
+     */
     function canPlaceShip(start, end) {
+        const [startX, startY] = start;
+        const [endX, endY] = end;
+
+        if (startX < 0 || startY < 0 || endX > 9 || endY > 9) {
+            return false;
+        }
+
+        const deltaY = endY - startY;
+
+        if (deltaY === 0) {
+            for (let i = startX; i <= endX; i++) {
+                const key = toKey(i, startY);
+                if (coordsToShip.has(key)) {
+                    return false;
+                }
+            }
+        } else {
+            for (let i = startY; i <= endY; i++) {
+                const key = toKey(startX, i);
+                if (coordsToShip.has(key)) {
+                    return false;
+                }
+            }
+        }
+
         return true;
     }
 
     /**
      * Places ships at start and end coordinates
-     * We're assuming that the start coordinates are always smaller than end coordinates
-     *
+     * We're assuming that the start coordinates are always smaller than end coordinates.
+     * We're also assuming that the start and end are axis-aligned.
+     * The Player will have to validate these two assumptions.
      * @param {[number, number]} start
      * @param {[number, number]} end
      */
@@ -50,21 +73,28 @@ function createGameboard() {
             const ship = createShip(length);
 
             if (deltaY === 0) {
-                // horizontal
                 let i;
                 for (i = 0; i <= deltaX; i++) {
-                    coordsToShip.set(`${i + startX}, ${startY}`, ship);
+                    const key = toKey(i + startX, startY);
+                    coordsToShip.set(key, ship);
                 }
             } else {
-                // vertical
                 let i;
                 for (i = 0; i <= deltaY; i++) {
-                    coordsToShip.set(`${startX}, ${i + startY}`, ship);
+                    const key = toKey(startX, i + startY);
+                    coordsToShip.set(key, ship);
                 }
             }
 
             ships.push(ship);
+        } else {
+            throw new Error("Cannot place a ship there");
         }
+    }
+
+    function canReceiveAttack([x, y]) {
+        const key = toKey(x, y);
+        return !fired.has(key);
     }
 
     /**
@@ -72,14 +102,18 @@ function createGameboard() {
      * @returns boolean - whether a ship has been hit or missed
      */
     function receiveAttack([x, y]) {
-        const key = `${x}, ${y}`;
-        if (coordsToShip.has(key)) {
-            coordsToShip.get(key).hit();
-            fired.add(key);
-            return true;
+        const key = toKey(x, y);
+        if (canReceiveAttack([x, y])) {
+            if (coordsToShip.has(key)) {
+                coordsToShip.get(key).hit();
+                fired.add(key);
+                return true;
+            } else {
+                fired.add(key);
+                return false;
+            }
         } else {
-            fired.add(key);
-            return false;
+            throw new Error("Cannot attack there");
         }
     }
 
@@ -101,7 +135,9 @@ function createGameboard() {
     }
 
     return {
+        canPlaceShip,
         placeShip,
+        canReceiveAttack,
         receiveAttack,
         areAllShipsSunk,
     };
