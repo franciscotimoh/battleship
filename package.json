@@ -1,5 +1,5 @@
 {
-    "name": "odin-webpack-template",
+    "name": "battleship",
     "version": "1.0.0",
     "main": "index.js",
     "type": "module",
@@ -11,15 +11,15 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/franciscotimoh/odin-webpack-template.git"
+        "url": "git+https://github.com/franciscotimoh/battleship.git"
     },
     "keywords": [],
     "author": "",
     "license": "ISC",
     "bugs": {
-        "url": "https://github.com/franciscotimoh/odin-webpack-template/issues"
+        "url": "https://github.com/franciscotimoh/battleshipissues"
     },
-    "homepage": "https://github.com/franciscotimoh/odin-webpack-template#readme",
+    "homepage": "https://github.com/franciscotimoh/battleship#readme",
     "description": "",
     "devDependencies": {
         "@babel/preset-env": "^7.29.5",

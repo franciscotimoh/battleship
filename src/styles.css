@@ -1,0 +1,45 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    height: 100%;
+    font-family:
+        "Source Serif 4",
+        serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Oxygen,
+        Ubuntu,
+        Cantarell,
+        "Open Sans",
+        "Helvetica Neue",
+        sans-serif;
+}
+
+.board {
+    height: 20rem;
+    aspect-ratio: 1;
+
+    display: grid;
+    grid-template-rows: repeat(10, 1fr);
+
+    border: 2px solid black;
+    background-color: black;
+    gap: 1px;
+}
+
+.row {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 1px;
+}
+
+.cell {
+    background-color: white;
+}
